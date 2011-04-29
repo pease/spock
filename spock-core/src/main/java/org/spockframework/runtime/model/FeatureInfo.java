@@ -23,6 +23,7 @@ public class FeatureInfo extends NodeInfo<SpecInfo, AnnotatedElement> implements
 
   private boolean excluded = false;
   private boolean skipped = false;
+  private boolean successful = false;
   
   @Override
   public AnnotatedElement getReflection() {
@@ -111,6 +112,15 @@ public class FeatureInfo extends NodeInfo<SpecInfo, AnnotatedElement> implements
 
   public void setSkipped(boolean skipped) {
     this.skipped = skipped;
+  }
+
+  // wasSuccessful would sound more natural, but lets stick to the conventions
+  public boolean isSuccessful() {
+    return successful;
+  }
+
+  public void setSuccessful(boolean successful) {
+      this.successful = successful;
   }
 
   /**

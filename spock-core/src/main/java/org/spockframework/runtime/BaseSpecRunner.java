@@ -180,6 +180,8 @@ public class BaseSpecRunner {
     invokeSetup();
     invokeFeatureMethod();
     invokeCleanup();
+
+    currentFeature.setSuccessful(runStatus == OK);
   }
 
   protected int resetStatus(int scope) {
