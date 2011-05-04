@@ -145,6 +145,9 @@ public class ParameterizedSpecRunner extends BaseSpecRunner {
     invokeSetup();
     invokeFeatureMethod(iteration.getDataValues());
     invokeCleanup();
+
+    iteration.setSuccessful(runStatus == OK);
+
     supervisor.afterIteration(iteration);
   }
 

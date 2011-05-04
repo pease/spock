@@ -22,6 +22,7 @@ import java.lang.reflect.AnnotatedElement;
 public class IterationInfo extends NodeInfo<FeatureInfo, AnnotatedElement> {
   private final Object[] dataValues;
   private final int estimatedNumIterations;
+  private boolean successful = false;
 
   public IterationInfo(Object[] dataValues, int estimatedNumIterations) {
     this.dataValues = dataValues;
@@ -57,5 +58,13 @@ public class IterationInfo extends NodeInfo<FeatureInfo, AnnotatedElement> {
    */
   public int getEstimatedNumIterations() {
     return estimatedNumIterations;
+  }
+
+  public boolean getSuccessful() {
+      return successful;
+  }
+
+  public void setSuccessful(boolean successful) {
+      this.successful = successful;
   }
 }
