@@ -29,6 +29,8 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 public @interface SpecMetadata {
   String FILENAME = "filename";
+  String FULLNAME = "fullname";
   
   String filename();
+  String fullname() default "";
 }

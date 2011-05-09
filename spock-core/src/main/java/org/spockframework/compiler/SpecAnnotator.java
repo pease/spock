@@ -28,7 +28,7 @@ import org.spockframework.runtime.model.*;
 /**
  * Puts all spec information required at runtime into annotations
  * attached to class members.
- * 
+ *
  * @author Peter Niederwieser
  */
 public class SpecAnnotator extends AbstractSpecVisitor {
@@ -49,6 +49,11 @@ public class SpecAnnotator extends AbstractSpecVisitor {
     String pathname = spec.getAst().getModule().getContext().getName();
     String filename = new File(pathname).getName();
     ann.addMember(SpecMetadata.FILENAME, new ConstantExpression(filename));
+
+    if (spec.getFullname() != null) {
+      ann.addMember(SpecMetadata.FULLNAME, new ConstantExpression(spec.getFullname()));
+    }
+
     spec.getAst().addAnnotation(ann);
   }
 

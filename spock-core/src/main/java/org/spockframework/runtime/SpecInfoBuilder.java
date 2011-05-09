@@ -74,6 +74,7 @@ public class SpecInfoBuilder {
     SpecUtil.checkIsSpec(clazz);
     spec.setParent(null);
     spec.setName(clazz.getSimpleName());
+    spec.setFullname(clazz.getAnnotation(SpecMetadata.class).fullname());
     spec.setReflection(clazz);
     spec.setFilename(clazz.getAnnotation(SpecMetadata.class).filename());
   }

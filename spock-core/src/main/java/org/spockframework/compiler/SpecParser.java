@@ -26,6 +26,7 @@ import static org.spockframework.util.Identifiers.*;
 import org.spockframework.compiler.model.*;
 
 import spock.lang.Shared;
+import spock.lang.SpecName;
 
 /**
  * Given the abstract syntax tree of a Groovy class representing a Spock
@@ -46,8 +47,26 @@ public class SpecParser implements GroovyClassVisitor {
 
   public Spec build(ClassNode clazz) {
     spec = new Spec(clazz);
+
+    findAndEvaluateSpecNameAnnotation(clazz);
     clazz.visitContents(this);
+
     return spec;
+  }
+
+  /**
+   * Locates an optional SpecName annotation on the ClassNode,
+   * that provides a readable name for the Specification.
+   * This information is used later by SpecAnnotator to create a SpecMetadata annotation.
+   */
+  private void findAndEvaluateSpecNameAnnotation(ClassNode clazz) {
+    List<AnnotationNode> specNames = clazz.getAnnotations();
+    for (AnnotationNode annotationNode : specNames) {
+      if (annotationNode.getClassNode().getTypeClass().isAssignableFrom(SpecName.class)) {
+        ConstantExpression value = (ConstantExpression) annotationNode.getMember("value");
+        spec.setFullname((String) value.getValue());
+      }
+    }
   }
 
   public void visitClass(ClassNode clazz) {
@@ -91,7 +110,7 @@ public class SpecParser implements GroovyClassVisitor {
 
   public void visitMethod(MethodNode method) {
     if (isIgnoredMethod(method)) return;
-    
+
     if (isFixtureMethod(method))
       buildFixtureMethod(method);
     else if (isFeatureMethod(method))
@@ -111,7 +130,7 @@ public class SpecParser implements GroovyClassVisitor {
       if (!fmName.equalsIgnoreCase(name)) continue;
 
       // assertion: is (meant to be) a fixture method, so we'll return true in the end
-      
+
       if (method.isStatic())
         errorReporter.error(method, "Fixture methods must not be static");
       if (!fmName.equals(name))
@@ -172,7 +191,7 @@ public class SpecParser implements GroovyClassVisitor {
     spec.getMethods().add(feature);
   }
 
-  private void buildHelperMethod(MethodNode method) {  
+  private void buildHelperMethod(MethodNode method) {
     Method helper = new HelperMethod(spec, method);
     spec.getMethods().add(helper);
 
@@ -192,7 +211,7 @@ public class SpecParser implements GroovyClassVisitor {
       else
         currBlock = addBlock(method, stat);
     }
-    
+
     checkIsValidSuccessor(method, BlockParseInfo.METHOD_END,
         method.getAst().getLastLineNumber(), method.getAst().getLastColumnNumber());
 

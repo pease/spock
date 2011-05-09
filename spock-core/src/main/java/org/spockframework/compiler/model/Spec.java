@@ -32,6 +32,7 @@ public class Spec extends Node<Spec, ClassNode> {
   private final List<Method> methods = new ArrayList<Method>();
   private final List<FixtureMethod> fixtureMethods = new ArrayList<FixtureMethod>();
 
+  private String fullname;
   private FixtureMethod setup;
   private FixtureMethod cleanup;
   private FixtureMethod setupSpec;
@@ -56,6 +57,14 @@ public class Spec extends Node<Spec, ClassNode> {
 
   public FixtureMethod getSetup() {
     return setup;
+  }
+
+  public String getFullname() {
+    return fullname;
+  }
+
+  public void setFullname(String fullname) {
+    this.fullname = fullname;
   }
 
   public void setSetup(FixtureMethod setup) {

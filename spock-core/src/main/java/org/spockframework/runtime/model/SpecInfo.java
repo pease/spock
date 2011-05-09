@@ -32,6 +32,7 @@ public class SpecInfo extends NodeInfo<NodeInfo, Class<?>> implements IMethodNam
   private final List<IMethodInterceptor> interceptors = new ArrayList<IMethodInterceptor>();
   private final List<IRunListener> listeners = new ArrayList<IRunListener>();
 
+  private String fullname;
   private String filename;
   private SpecInfo superSpec;
   private SpecInfo subSpec;
@@ -47,7 +48,15 @@ public class SpecInfo extends NodeInfo<NodeInfo, Class<?>> implements IMethodNam
 
   private boolean excluded = false;
   private boolean skipped = false;
-  
+
+  public String getFullname() {
+    return fullname;
+  }
+
+  public void setFullname(String fullname) {
+    this.fullname = fullname;
+  }
+
   public String getFilename() {
     return filename;
   }
@@ -116,7 +125,7 @@ public class SpecInfo extends NodeInfo<NodeInfo, Class<?>> implements IMethodNam
         curr = curr.getSuperSpec();
       }
     }
-    
+
     return specsBottomToTop;
   }
 
@@ -194,7 +203,7 @@ public class SpecInfo extends NodeInfo<NodeInfo, Class<?>> implements IMethodNam
 
   public List<FeatureInfo> getAllFeatures() {
     if (superSpec == null) return features;
-    
+
     List<FeatureInfo> result = new ArrayList<FeatureInfo>(superSpec.getAllFeatures());
     result.addAll(features);
     return result;
@@ -256,7 +265,7 @@ public class SpecInfo extends NodeInfo<NodeInfo, Class<?>> implements IMethodNam
   public void sortFeatures(final IFeatureSortOrder order) {
     List<FeatureInfo> features = getAllFeatures();
     Collections.sort(features, order);
-    for (int i = 0; i < features.size(); i++) 
+    for (int i = 0; i < features.size(); i++)
       features.get(i).setExecutionOrder(i);
   }
 
