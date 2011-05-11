@@ -23,6 +23,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.stmt.Statement;
 
 import static org.spockframework.util.Identifiers.*;
+
 import org.spockframework.compiler.model.*;
 
 import spock.lang.Shared;
@@ -54,23 +55,19 @@ public class SpecParser implements GroovyClassVisitor {
     return spec;
   }
 
-  /**
-   * Locates an optional SpecName annotation on the ClassNode,
-   * that provides a readable name for the Specification.
-   * This information is used later by SpecAnnotator to create a SpecMetadata annotation.
-   */
+  // Locates an optional SpecName annotation on the ClassNode,
+  // that provides a readable name for the Specification.
+  // This information is used later by SpecAnnotator to create a SpecMetadata annotation.
   private void findAndEvaluateSpecNameAnnotation(ClassNode clazz) {
-    List<AnnotationNode> specNames = clazz.getAnnotations();
-    for (AnnotationNode annotationNode : specNames) {
-      if (annotationNode.getClassNode().getTypeClass().isAssignableFrom(SpecName.class)) {
-        ConstantExpression value = (ConstantExpression) annotationNode.getMember("value");
-        spec.setFullname((String) value.getValue());
-      }
+    AnnotationNode specName = AstUtil.getAnnotation(clazz, SpecName.class);
+    if (specName != null) {
+      ConstantExpression value = (ConstantExpression) specName.getMember("value");
+      spec.setFullname((String) value.getValue());
     }
   }
 
   public void visitClass(ClassNode clazz) {
-   throw new UnsupportedOperationException("visitClass");
+    throw new UnsupportedOperationException("visitClass");
   }
 
   // might only want to include fields relating to a user-provided
@@ -87,14 +84,15 @@ public class SpecParser implements GroovyClassVisitor {
     spec.getFields().add(field);
   }
 
-  public void visitProperty(PropertyNode node) {}
+  public void visitProperty(PropertyNode node) {
+  }
 
   public void visitConstructor(ConstructorNode constructor) {
     if (AstUtil.isSynthetic(constructor)) return;
     if (constructorMayHaveBeenAddedByCompiler(constructor)) return;
 
     errorReporter.error(constructor,
-"Constructors are not allowed; instead, define a 'setup()' or 'setupSpec()' method");
+        "Constructors are not allowed; instead, define a 'setup()' or 'setupSpec()' method");
   }
 
   // In case of joint compilation, Verifier - which may add a default constructor
@@ -105,7 +103,7 @@ public class SpecParser implements GroovyClassVisitor {
     Parameter[] params = constructor.getParameters();
     Statement firstStat = constructor.getFirstStatement();
     return AstUtil.isJointCompiled(spec.getAst()) && constructor.isPublic()
-      && params != null && params.length == 0 && firstStat == null;
+        && params != null && params.length == 0 && firstStat == null;
   }
 
   public void visitMethod(MethodNode method) {
@@ -223,8 +221,8 @@ public class SpecParser implements GroovyClassVisitor {
   private Block addBlock(Method method, Statement stat) throws InvalidSpecCompileException {
     String label = stat.getStatementLabel();
 
-    for (BlockParseInfo blockInfo: BlockParseInfo.values()) {
-	  	if (!label.equals(blockInfo.toString())) continue;
+    for (BlockParseInfo blockInfo : BlockParseInfo.values()) {
+      if (!label.equals(blockInfo.toString())) continue;
 
       checkIsValidSuccessor(method, blockInfo, stat.getLineNumber(), stat.getColumnNumber());
       Block block = blockInfo.addNewBlock(method);
@@ -235,15 +233,15 @@ public class SpecParser implements GroovyClassVisitor {
         block.getDescriptions().add(description);
 
       return block;
-		}
+    }
 
-		throw new InvalidSpecCompileException(stat, "Unrecognized block label: " + label);
+    throw new InvalidSpecCompileException(stat, "Unrecognized block label: " + label);
   }
 
   private String getDescription(Statement stat) {
     ConstantExpression constExpr = AstUtil.getExpression(stat, ConstantExpression.class);
     return constExpr == null || !(constExpr.getValue() instanceof String) ?
-        null : (String)constExpr.getValue();
+        null : (String) constExpr.getValue();
   }
 
   private void checkIsValidSuccessor(Method method, BlockParseInfo blockInfo, int line, int column)
