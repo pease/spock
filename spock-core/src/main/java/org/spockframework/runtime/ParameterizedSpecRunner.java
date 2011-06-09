@@ -44,6 +44,8 @@ public class ParameterizedSpecRunner extends BaseSpecRunner {
     Iterator[] iterators = createIterators(dataProviders);
     runIterations(iterators, numIterations);
     closeDataProviders(dataProviders);
+
+    currentFeature.setSuccessful(runStatus == OK);
   }
 
   private Object[] createDataProviders() {
