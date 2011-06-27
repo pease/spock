@@ -3,7 +3,7 @@ apply from: profile("publishMaven")
 description = "Spock Framework - Unitils Module"
 
 dependencies {
-  compile project(":spock-core")
+  compile project(":spock:spock-core")
   compile "org.unitils:unitils-core:3.1"
 
   // the following are transitive deps of unitils-core with scope compile

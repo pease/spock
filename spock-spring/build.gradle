@@ -5,7 +5,7 @@ description = "Spock Framework - Spring Module"
 def springVersion = "3.0.5.RELEASE"
 
 dependencies {
-  compile project(":spock-core")
+  compile project(":spock:spock-core")
   compile "org.springframework:spring-test:$springVersion"
   compile "org.springframework:spring-beans:$springVersion"
   testCompile "org.springframework:spring-context:$springVersion"
