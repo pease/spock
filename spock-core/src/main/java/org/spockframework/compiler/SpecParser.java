@@ -20,6 +20,9 @@ import java.util.List;
 
 import org.codehaus.groovy.ast.*;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.Statement;
 
 import static org.spockframework.util.Identifiers.*;
@@ -178,6 +181,42 @@ public class SpecParser implements GroovyClassVisitor {
     return false;
   }
 
+  private boolean isFileMethodCall(Statement stat) {
+    MethodCallExpression mce = AstUtil.getExpression(stat, MethodCallExpression.class);
+
+    if (mce != null) {
+      ConstantExpression method = mce.getMethod().getClass().equals(ConstantExpression.class)
+          ? ((ConstantExpression) mce.getMethod())
+          : null;
+
+      VariableExpression object = mce.getObjectExpression().getClass().equals(VariableExpression.class)
+          ? ((VariableExpression) mce.getObjectExpression())
+          : null;
+
+      List<Expression> arguments = AstUtil.getArguments(mce);
+
+      return method != null && method.getValue().equals("file") &&
+          object != null && object.getName().equals("this") &&
+          arguments.size() == 1;
+    }
+
+    return false;
+  }
+
+  private String extractFileOrigin(Statement stat) {
+    MethodCallExpression mce = AstUtil.getExpression(stat, MethodCallExpression.class);
+
+    if (mce != null) {
+      List<Expression> arguments = AstUtil.getArguments(mce);
+
+      if (arguments.size() == 1) {
+        return AstUtil.getConstantExpressionValue((ConstantExpression) arguments.get(0), String.class);
+      }
+    }
+
+    return null;
+  }
+
   private void buildFeatureMethod(MethodNode method) {
     Method feature = new FeatureMethod(spec, method, featureMethodCount++);
     try {
@@ -204,8 +243,15 @@ public class SpecParser implements GroovyClassVisitor {
     Block currBlock = method.addBlock(new AnonymousBlock(method));
 
     for (Statement stat : stats) {
-      if (stat.getStatementLabel() == null)
-        currBlock.getAst().add(stat);
+      if (stat.getStatementLabel() == null) {
+        if (isFileMethodCall(stat)) {
+          String filename = extractFileOrigin(stat);
+          if (filename != null)
+            currBlock.getFileOrigins().add(filename);
+        } else {
+          currBlock.getAst().add(stat);
+        }
+      }
       else
         currBlock = addBlock(method, stat);
     }

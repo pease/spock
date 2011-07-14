@@ -30,6 +30,7 @@ import org.codehaus.groovy.ast.stmt.Statement;
  */
 public abstract class Block extends Node<Method, List<Statement>> {
   private final List<String> descriptions = new ArrayList<String>(3);
+  private final List<String> fileOrigins = new ArrayList<String>(3);
   private Block prev;
   private Block next;
 
@@ -39,6 +40,10 @@ public abstract class Block extends Node<Method, List<Statement>> {
 
   public List<String> getDescriptions() {
     return descriptions;
+  }
+
+  public List<String> getFileOrigins() {
+    return fileOrigins;
   }
 
   public Block getPrevious() {

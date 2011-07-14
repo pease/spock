@@ -28,7 +28,9 @@ import java.lang.annotation.*;
 public @interface BlockMetadata {
   String KIND = "kind";
   String TEXTS = "texts";
+  String FILE_ORIGINS = "fileOrigins";
 
   BlockKind kind();
   String[] texts(); // IDEA: rename to "description(s)"
+  String[] fileOrigins() default {};
 }
