@@ -26,6 +26,7 @@ import java.util.List;
 public class BlockInfo {
   private BlockKind kind;
   private List<String> texts;
+  private List<String> fileOrigins;
 
   public BlockKind getKind() {
     return kind;
@@ -41,5 +42,13 @@ public class BlockInfo {
 
   public void setTexts(List<String> texts) {
     this.texts = texts;
+  }
+
+  public List<String> getFileOrigins() {
+    return fileOrigins;
+  }
+
+  public void setFileOrigins(List<String> fileOrigins) {
+    this.fileOrigins = fileOrigins;
   }
 }

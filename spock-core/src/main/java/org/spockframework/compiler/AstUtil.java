@@ -128,6 +128,10 @@ public abstract class AstUtil {
     return asInstance(exprStat.getExpression(), type);
   }
 
+  public static <T> T getConstantExpressionValue(ConstantExpression expr, Class<T> type) {
+    return asInstance(expr.getValue(), type);
+  }
+
   @SuppressWarnings("unchecked")
   public static @Nullable <T> T asInstance(Object obj, Class<T> type) {
     return type.isInstance(obj) ? (T) obj : null;

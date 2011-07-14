@@ -178,6 +178,14 @@ public class SpecParser implements GroovyClassVisitor {
     return false;
   }
 
+  private String getFileOrigin(Statement stat) {
+    final String FILE_TOKEN = "file:";
+    String description = getDescription(stat);
+
+    return (description == null) || !(description.startsWith(FILE_TOKEN)) ?
+        null : description.substring(FILE_TOKEN.length());
+  }
+
   private void buildFeatureMethod(MethodNode method) {
     Method feature = new FeatureMethod(spec, method, featureMethodCount++);
     try {
@@ -202,12 +210,26 @@ public class SpecParser implements GroovyClassVisitor {
   private void buildBlocks(Method method) throws InvalidSpecCompileException {
     List<Statement> stats = AstUtil.getStatements(method.getAst());
     Block currBlock = method.addBlock(new AnonymousBlock(method));
+    boolean firstBlockStatement = false;
 
     for (Statement stat : stats) {
-      if (stat.getStatementLabel() == null)
-        currBlock.getAst().add(stat);
-      else
+      if (stat.getStatementLabel() == null) {
+        if (firstBlockStatement) {
+          firstBlockStatement = false;
+
+          String fileOrigin = getFileOrigin(stat);
+          if (fileOrigin == null) {
+            currBlock.getAst().add(stat);
+          } else {
+            currBlock.getFileOrigins().add(fileOrigin);
+          }
+        } else {
+          currBlock.getAst().add(stat);
+        }
+      } else {
         currBlock = addBlock(method, stat);
+        firstBlockStatement = true;
+      }
     }
 
     checkIsValidSuccessor(method, BlockParseInfo.METHOD_END,

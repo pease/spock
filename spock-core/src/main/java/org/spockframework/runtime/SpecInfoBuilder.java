@@ -167,6 +167,7 @@ public class SpecInfoBuilder {
       BlockInfo block = new BlockInfo();
       block.setKind(blockMetadata.kind());
       block.setTexts(Arrays.asList(blockMetadata.texts()));
+      block.setFileOrigins(Arrays.asList(blockMetadata.fileOrigins()));
       feature.addBlock(block);
     }
 

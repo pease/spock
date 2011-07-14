@@ -92,12 +92,20 @@ public class SpecAnnotator extends AbstractSpecVisitor {
 
   private void addBlockMetadata(Block block, BlockKind kind) {
     AnnotationNode blockAnn = new AnnotationNode(nodeCache.BlockMetadata);
+
     blockAnn.setMember(BlockMetadata.KIND, new PropertyExpression(
         new ClassExpression(nodeCache.BlockKind), kind.name()));
+
     ListExpression textExprs = new ListExpression();
     for (String text : block.getDescriptions())
       textExprs.addExpression(new ConstantExpression(text));
     blockAnn.setMember(BlockMetadata.TEXTS, textExprs);
+
+    ListExpression fileExprs = new ListExpression();
+    for (String fileOrigin : block.getFileOrigins())
+      fileExprs.addExpression(new ConstantExpression(fileOrigin));
+    blockAnn.setMember(BlockMetadata.FILE_ORIGINS, fileExprs);
+
     blockAnnElems.addExpression(new AnnotationConstantExpression(blockAnn));
   }
 
